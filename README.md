@@ -1,2 +1,4 @@
-presence-analyzer-jchrusciel
-============================
+Presence Analyzer
+=================
+
+Calculate and show employees presence statistics.
