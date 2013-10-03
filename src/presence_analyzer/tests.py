@@ -123,46 +123,88 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
         """
         Test grouping items
         """
-        data = utils.get_data()
+
+        data = {
+            10: {
+                datetime.date(2013, 9, 10): {
+                    'start': datetime.time(9, 39, 5),
+                    'end': datetime.time(17, 59, 52)},
+                datetime.date(2013, 9, 12): {
+                    'start': datetime.time(10, 48, 46),
+                    'end': datetime.time(17, 23, 51)},
+                datetime.date(2013, 9, 11): {
+                    'start': datetime.time(9, 19, 52),
+                    'end': datetime.time(16, 7, 37)
+                }
+            }
+        }
+
         weekdays = utils.group_by_weekday(data[10])
         self.assertEqual(len(weekdays), 7)
+        self.assertEqual(weekdays[0], [])
+        self.assertEqual(weekdays[1], [30047])
+        self.assertEqual(weekdays[2], [24465])
+        self.assertEqual(weekdays[3], [23705])
+        self.assertEqual(weekdays[4], [])
+        self.assertEqual(weekdays[5], [])
+        self.assertEqual(weekdays[6], [])
 
     def test_seconds_since_midnight(self):
         """
         Test calculating time
         """
-        data = utils.get_data()
+        data = {
+            10: {
+                datetime.date(2013, 9, 10): {
+                    'start': datetime.time(9, 39, 5),
+                    'end': datetime.time(17, 59, 52)
+                }
+            }
+        }
+
         sample_date = datetime.date(2013, 9, 10)
 
         start = utils.seconds_since_midnight(data[10][sample_date]['start'])
         self.assertGreaterEqual(start, 0)
         self.assertLess(start, 86400)
+        self.assertEqual(start, 34745)
 
         end = utils.seconds_since_midnight(data[10][sample_date]['end'])
         self.assertGreaterEqual(end, 0)
         self.assertLess(end, 86400)
+        self.assertEqual(end, 64792)
 
     def test_interval(self):
         """
         Test if interval is returned properly
         """
-        data = utils.get_data()
+        data = {
+            10: {
+                datetime.date(2013, 9, 10): {
+                    'start': datetime.time(9, 39, 5),
+                    'end': datetime.time(17, 59, 52)
+                }
+            }
+        }
+
         sample_date = datetime.date(2013, 9, 10)
         start_date = data[10][sample_date]['start']
         end_date = data[10][sample_date]['end']
 
         self.assertGreaterEqual(utils.interval(start_date, end_date), 0)
         self.assertLess(utils.interval(start_date, end_date), 86400)
+        self.assertEqual(utils.interval(start_date, end_date), 30047)
 
     def test_mean(self):
         """
         Test if mean is returned corretly
         """
-        data = utils.get_data()
-        grouped_data = utils.group_by_weekday(data[10])
+        self.assertEqual(utils.mean([0]), 0)
+        self.assertEqual(utils.mean([0, 0]), 0)
+        self.assertEqual(utils.mean([300, 400]), 350.0)
 
-        self.assertGreaterEqual(utils.mean(grouped_data), 0)
-
+        sample_data = [0, 30047, 24465, 23705, 0, 0, 0]
+        self.assertEqual(utils.mean(sample_data), 11173.857142857143)
 
 
 def suite():
