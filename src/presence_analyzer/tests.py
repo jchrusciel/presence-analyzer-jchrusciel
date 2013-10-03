@@ -62,7 +62,13 @@ class PresenceAnalyzerViewsTestCase(unittest.TestCase):
         self.assertEqual(resp.content_type, 'application/json')
         data = json.loads(resp.data)
         self.assertEqual(len(data), 7)
-        self.assertListEqual(data[0], ["Mon", 0])
+        self.assertListEqual(data[0], [u'Mon', 0])
+        self.assertListEqual(data[1], [u'Tue', 30047.0])
+        self.assertListEqual(data[2], [u'Wed', 24465.0])
+        self.assertListEqual(data[3], [u'Thu', 23705.0])
+        self.assertListEqual(data[4], [u'Fri', 0])
+        self.assertListEqual(data[5], [u'Sat', 0])
+        self.assertListEqual(data[6], [u'Sun', 0])
 
     def test_presence_weekday_view(self):
         """
@@ -73,7 +79,14 @@ class PresenceAnalyzerViewsTestCase(unittest.TestCase):
         self.assertEqual(resp.content_type, 'application/json')
         data = json.loads(resp.data)
         self.assertEqual(len(data), 8)
-        self.assertListEqual(data[1], ["Mon", 0])
+        self.assertListEqual(data[0], [u'Weekday', u'Presence (s)'])
+        self.assertListEqual(data[1], [u'Mon', 0])
+        self.assertListEqual(data[2], [u'Tue', 30047])
+        self.assertListEqual(data[3], [u'Wed', 24465])
+        self.assertListEqual(data[4], [u'Thu', 23705])
+        self.assertListEqual(data[5], [u'Fri', 0])
+        self.assertListEqual(data[6], [u'Sat', 0])
+        self.assertListEqual(data[7], [u'Sun', 0])
 
 
 class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
@@ -123,9 +136,11 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
 
         start = utils.seconds_since_midnight(data[10][sample_date]['start'])
         self.assertGreaterEqual(start, 0)
+        self.assertLess(start, 86400)
 
         end = utils.seconds_since_midnight(data[10][sample_date]['end'])
         self.assertGreaterEqual(end, 0)
+        self.assertLess(end, 86400)
 
     def test_interval(self):
         """
@@ -137,6 +152,7 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
         end_date = data[10][sample_date]['end']
 
         self.assertGreaterEqual(utils.interval(start_date, end_date), 0)
+        self.assertLess(utils.interval(start_date, end_date), 86400)
 
     def test_mean(self):
         """
@@ -146,6 +162,7 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
         grouped_data = utils.group_by_weekday(data[10])
 
         self.assertGreaterEqual(utils.mean(grouped_data), 0)
+
 
 
 def suite():
