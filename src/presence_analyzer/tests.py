@@ -134,17 +134,25 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
                     'end': datetime.time(17, 23, 51)},
                 datetime.date(2013, 9, 11): {
                     'start': datetime.time(9, 19, 52),
-                    'end': datetime.time(16, 7, 37)
+                    'end': datetime.time(16, 7, 37)},
+                datetime.date(2013, 9, 17): {
+                    'start': datetime.time(9, 39, 5),
+                    'end': datetime.time(18, 19, 52)},
+                datetime.date(2013, 9, 19): {
+                    'start': datetime.time(10, 48, 46),
+                    'end': datetime.time(17, 53, 51)},
+                datetime.date(2013, 9, 18): {
+                    'start': datetime.time(9, 19, 52),
+                    'end': datetime.time(16, 47, 37)}
                 }
             }
-        }
 
         weekdays = utils.group_by_weekday(data[10])
         self.assertEqual(len(weekdays), 7)
         self.assertEqual(weekdays[0], [])
-        self.assertEqual(weekdays[1], [30047])
-        self.assertEqual(weekdays[2], [24465])
-        self.assertEqual(weekdays[3], [23705])
+        self.assertEqual(weekdays[1], [30047, 31247])
+        self.assertEqual(weekdays[2], [24465, 26865])
+        self.assertEqual(weekdays[3], [23705, 25505])
         self.assertEqual(weekdays[4], [])
         self.assertEqual(weekdays[5], [])
         self.assertEqual(weekdays[6], [])
@@ -153,47 +161,33 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
         """
         Test calculating time
         """
-        data = {
-            10: {
-                datetime.date(2013, 9, 10): {
-                    'start': datetime.time(9, 39, 5),
-                    'end': datetime.time(17, 59, 52)
-                }
-            }
-        }
+        value = utils.seconds_since_midnight(datetime.time(9, 39, 5))
+        self.assertEqual(value, 34745)
 
-        sample_date = datetime.date(2013, 9, 10)
+        value = utils.seconds_since_midnight(datetime.time(17, 59, 52))
+        self.assertEqual(value, 64792)
 
-        start = utils.seconds_since_midnight(data[10][sample_date]['start'])
-        self.assertGreaterEqual(start, 0)
-        self.assertLess(start, 86400)
-        self.assertEqual(start, 34745)
-
-        end = utils.seconds_since_midnight(data[10][sample_date]['end'])
-        self.assertGreaterEqual(end, 0)
-        self.assertLess(end, 86400)
-        self.assertEqual(end, 64792)
+        value = utils.seconds_since_midnight(datetime.time(0, 0, 0))
+        self.assertEqual(value, 0)
 
     def test_interval(self):
         """
         Test if interval is returned properly
         """
-        data = {
-            10: {
-                datetime.date(2013, 9, 10): {
-                    'start': datetime.time(9, 39, 5),
-                    'end': datetime.time(17, 59, 52)
-                }
-            }
-        }
+        value = utils.interval(datetime.time(9, 39, 5),
+                               datetime.time(17, 59, 52))
+        self.assertEqual(value, 30047)
 
-        sample_date = datetime.date(2013, 9, 10)
-        start_date = data[10][sample_date]['start']
-        end_date = data[10][sample_date]['end']
+        value = utils.interval(datetime.time(9, 19, 52),
+                               datetime.time(16, 7, 37))
+        self.assertEqual(value, 24465)
 
-        self.assertGreaterEqual(utils.interval(start_date, end_date), 0)
-        self.assertLess(utils.interval(start_date, end_date), 86400)
-        self.assertEqual(utils.interval(start_date, end_date), 30047)
+        value = utils.interval(datetime.time(0, 0, 0),
+                               datetime.time(23, 59, 59))
+        self.assertEqual(value, 86399)
+
+        value = utils.interval(datetime.time(0, 0, 0), datetime.time(0, 0, 0))
+        self.assertEqual(value, 0)
 
     def test_mean(self):
         """
