@@ -84,6 +84,44 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
         self.assertEqual(data[10][sample_date]['start'],
                          datetime.time(9, 39, 5))
 
+    def test_group_by_weekday_presence(self):
+        """
+        Test grouping by weekday presence
+        """
+
+        data = {
+            10: {
+                datetime.date(2013, 9, 10): {
+                    'start': datetime.time(9, 39, 5),
+                    'end': datetime.time(17, 59, 52)},
+                datetime.date(2013, 9, 12): {
+                    'start': datetime.time(10, 48, 46),
+                    'end': datetime.time(17, 23, 51)},
+                datetime.date(2013, 9, 11): {
+                    'start': datetime.time(9, 19, 52),
+                    'end': datetime.time(16, 7, 37)},
+                datetime.date(2013, 9, 17): {
+                    'start': datetime.time(9, 39, 5),
+                    'end': datetime.time(18, 19, 52)},
+                datetime.date(2013, 9, 19): {
+                    'start': datetime.time(10, 48, 46),
+                    'end': datetime.time(17, 53, 51)},
+                datetime.date(2013, 9, 18): {
+                    'start': datetime.time(9, 19, 52),
+                    'end': datetime.time(16, 47, 37)}
+                }
+            }
+
+        weekdays = utils.group_by_weekday_presence(data[10])
+        self.assertEqual(len(weekdays), 7)
+        self.assertEqual(weekdays[0], [0, 0])
+        self.assertEqual(weekdays[1], [34745.0, 65392.0])
+        self.assertEqual(weekdays[2], [33592.0, 59257.0])
+        self.assertEqual(weekdays[3], [38926.0, 63531.0])
+        self.assertEqual(weekdays[4], [0, 0])
+        self.assertEqual(weekdays[5], [0, 0])
+        self.assertEqual(weekdays[6], [0, 0])
+
 
 def suite():
     """

@@ -22,6 +22,9 @@ def jsonify(function):
     """
     @wraps(function)
     def inner(*args, **kwargs):
+        """
+        Returns response result
+        """
         return Response(dumps(function(*args, **kwargs)),
                         mimetype='application/json')
     return inner
@@ -98,24 +101,23 @@ def mean(items):
     """
     return float(sum(items)) / len(items) if len(items) > 0 else 0
 
+
 def group_by_weekday_presence(items):
     """
     Groups mean presence entries by weekday.
     """
-    result = {i: [] for i in range(7)}
+    start_list = {i: [] for i in range(7)}
+    end_list = {i: [] for i in range(7)}
     for date in items:
         start = seconds_since_midnight(items[date]['start'])
         end = seconds_since_midnight(items[date]['end'])
-        result[date.weekday()].append([start, end])
+        start_list[date.weekday()].append(start)
+        end_list[date.weekday()].append(end)
 
     mean_start_end = []
-
-    #print type(result)
-    #print result
-    for day in result.values():
-        #print type(day)
-        #print day
-        mean_start_end.append([sum(i)/len(day) for i in zip(*day)])
-    print mean_start_end
+    for day in range(7):
+        mean_start_end.append(
+            [mean(start_list[day]), mean(end_list[day])]
+        )
 
     return mean_start_end
