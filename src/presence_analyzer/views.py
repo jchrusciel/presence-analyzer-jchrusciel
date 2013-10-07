@@ -86,7 +86,7 @@ def presence_start_end_view(user_id):
 
     result = []
     for day_number, day in enumerate(weekdays):
-        if (len(day) != 0):
+        if (len(day)):
             result.append([calendar.day_abbr[day_number], day[0], day[1]])
         else:
             result.append([calendar.day_abbr[day_number], 0, 0])
