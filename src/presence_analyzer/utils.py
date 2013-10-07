@@ -100,3 +100,24 @@ def mean(items):
     Calculates arithmetic mean. Returns zero for empty lists.
     """
     return float(sum(items)) / len(items) if len(items) > 0 else 0
+
+
+def group_by_weekday_presence(items):
+    """
+    Groups mean presence entries by weekday.
+    """
+    start_list = {i: [] for i in range(7)}
+    end_list = {i: [] for i in range(7)}
+    for date in items:
+        start = seconds_since_midnight(items[date]['start'])
+        end = seconds_since_midnight(items[date]['end'])
+        start_list[date.weekday()].append(start)
+        end_list[date.weekday()].append(end)
+
+    mean_start_end = []
+    for day in range(7):
+        mean_start_end.append(
+            [mean(start_list[day]), mean(end_list[day])]
+        )
+
+    return mean_start_end
