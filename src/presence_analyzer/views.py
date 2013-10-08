@@ -10,6 +10,7 @@ from presence_analyzer.main import app
 from presence_analyzer.utils import (
     jsonify, get_data, mean, group_by_weekday, group_by_weekday_presence
 )
+from flask import render_template
 
 import logging
 log = logging.getLogger(__name__)  # pylint: disable-msg=C0103
@@ -20,7 +21,7 @@ def mainpage():
     """
     Redirects to front page.
     """
-    return redirect('/static/presence_weekday.html')
+    return redirect('presence_weekday.html')
 
 
 @app.route('/api/v1/users', methods=['GET'])
@@ -92,3 +93,27 @@ def presence_start_end_view(user_id):
             result.append([calendar.day_abbr[day_number], 0, 0])
 
     return result
+
+
+@app.route("/presence_start_end.html")
+def presence_start_end():
+    """
+    Renders template file for present start/end page
+    """
+    return render_template('presence_start_end.html')
+
+
+@app.route("/presence_weekday.html")
+def presence_weekday():
+    """
+    Renders template file for weekday presence page
+    """
+    return render_template('presence_weekday.html')
+
+
+@app.route("/mean_time_weekday.html")
+def mean_time_weekday():
+    """
+    Renders template file for mean weekday time page
+    """
+    return render_template('mean_time_weekday.html')

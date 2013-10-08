@@ -88,6 +88,33 @@ class PresenceAnalyzerViewsTestCase(unittest.TestCase):
         self.assertListEqual(data[6], [u'Sat', 0])
         self.assertListEqual(data[7], [u'Sun', 0])
 
+    def test_presence_weekday_page(self):
+        """
+        Test presence by weekday page.
+        """
+        resp = self.client.get('/presence_weekday.html')
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('<li id="selected"><a href="presence_weekday.html">',
+                      resp.data)
+
+    def test_presence_start_end_page(self):
+        """
+        Test mean weekday presence start/end time page.
+        """
+        resp = self.client.get('/presence_start_end.html')
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('<li id="selected"><a href="presence_start_end.html">',
+                      resp.data)
+
+    def test_mean_time_weekday_page(self):
+        """
+        Test presence mean time by weekday page.
+        """
+        resp = self.client.get('/mean_time_weekday.html')
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('<li id="selected"><a href="mean_time_weekday.html">',
+                      resp.data)
+
 
 class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
     """
