@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang=en>
+<head>
+    <title>{% block title %}The Page Title{% endblock %}</title>
+    {% block head %}
+    <link rel="stylesheet" type=text/css href="{{ url_for('static', filename='css/normalize.css') }}">
+    <link rel="stylesheet" type=text/css href="{{ url_for('static', filename='css/style.css') }}">
+    <meta name="keywords" content="" />
+    <meta name="description" content=""/>
+    <meta name="author" content="STX Next sp. z o.o."/>
+    <meta name="viewport" content="width=device-width; initial-scale=1.0">
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    {% endblock %}
+</head>
+
+<body>
+    <div id="main">
+        <div id="header">
+            <h1></h1>
+            {% set navigation_bar = [
+            ('presence_weekday.html', 'presence_weekday', 'Presence by weekday'),
+            ('mean_time_weekday.html', 'mean_rime_weekday', 'Presence mean time'),
+            ('presence_start_end.html', 'presence_start_end', 'Presence start-end')
+            ] -%}
+            {% set active_page = active_page|default('presence_weekday') -%}
+            <ul>
+                {% for href, id, caption in navigation_bar %}
+                <li{% if id == active_page %} id="selected"{% endif
+                %}><a href="{{ href|e }}">{{ caption|e }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div id="content">
+            {% block content %}{% endblock %}
+                        <p>
+                <select id="user_id" style="display: none">
+                    <option value="">--</option>
+                </select>
+                <div id="chart_div" style="display: none">
+                </div>
+                <div id="loading">
+                    <img src="/static/img/loading.gif" />
+                </div>
+            </p>
+        </div>
+
+    </div>
+</body>
+</html>
