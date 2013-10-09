@@ -12,7 +12,6 @@ from presence_analyzer.utils import (
     read_user_data
 )
 
-from lxml import etree
 
 import logging
 log = logging.getLogger(__name__)  # pylint: disable-msg=C0103
@@ -96,6 +95,7 @@ def presence_start_end_view(user_id):
 
     return result
 
+
 @app.route('/api/v1/users_data')
 @jsonify
 def view_users_data():
@@ -104,14 +104,6 @@ def view_users_data():
     """
     data = read_user_data()
 
-    #print len(data.findall('.//user'))
-
-    #for users in data.findall('.//user'):
-    #    print users.get('id')
-    #    print users.find('.//avatar').text
-    #    print users.find('.//name').text
-
-    return [{'user_id': i.get('id'), 'name': i.find('.//name').text, 'avatar': i.find('.//avatar').text}
+    return [{'user_id': i.get('id'), 'name': i.find('.//name').text,
+             'avatar': i.find('.//avatar').text}
             for i in data.findall('.//user')]
-
-
