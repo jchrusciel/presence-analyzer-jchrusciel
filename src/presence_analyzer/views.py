@@ -8,8 +8,11 @@ from flask import redirect
 
 from presence_analyzer.main import app
 from presence_analyzer.utils import (
-    jsonify, get_data, mean, group_by_weekday, group_by_weekday_presence
+    jsonify, get_data, mean, group_by_weekday, group_by_weekday_presence,
+    read_user_data
 )
+
+from lxml import etree
 
 import logging
 log = logging.getLogger(__name__)  # pylint: disable-msg=C0103
@@ -92,3 +95,23 @@ def presence_start_end_view(user_id):
             result.append([calendar.day_abbr[day_number], 0, 0])
 
     return result
+
+@app.route('/api/v1/users_data')
+@jsonify
+def view_users_data():
+    """
+    Users detailed data listing for dropdown.
+    """
+    data = read_user_data()
+
+    #print len(data.findall('.//user'))
+
+    #for users in data.findall('.//user'):
+    #    print users.get('id')
+    #    print users.find('.//avatar').text
+    #    print users.find('.//name').text
+
+    return [{'user_id': i.get('id'), 'name': i.find('.//name').text, 'avatar': i.find('.//avatar').text}
+            for i in data.findall('.//user')]
+
+

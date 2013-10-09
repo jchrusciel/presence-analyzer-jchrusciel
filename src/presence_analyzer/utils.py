@@ -15,6 +15,8 @@ from presence_analyzer.main import app
 import logging
 log = logging.getLogger(__name__)  # pylint: disable-msg=C0103
 
+from lxml import etree
+
 
 def jsonify(function):
     """
@@ -121,3 +123,11 @@ def group_by_weekday_presence(items):
         )
 
     return mean_start_end
+
+def read_user_data():
+    users_file = open(app.config['DATA_CSV'], 'r')
+    tree = etee.parse(users_file)
+
+    return tree
+
+
