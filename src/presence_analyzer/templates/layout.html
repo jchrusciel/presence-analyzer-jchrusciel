@@ -33,10 +33,13 @@
         </div>
         <div id="content">
             {% block content %}{% endblock %}
-                        <p>
+            <p>
                 <select id="user_id" style="display: none">
                     <option value="">--</option>
                 </select>
+                <div id="avatar_div" style="width: 100px; height: 100px; display: none;">
+                    <img id="avatar_img" src="" alt="avatar" style="width: 100px; height: 100px;">
+                </div>
                 <div id="chart_div" style="display: none">
                 </div>
                 <div id="loading">

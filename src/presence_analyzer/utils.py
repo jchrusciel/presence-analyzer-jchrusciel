@@ -125,9 +125,12 @@ def group_by_weekday_presence(items):
     return mean_start_end
 
 
-def read_user_data():
+def read_user_data(xml_data=None):
     """
     Read and parse user data from xml file
-    and returns it as lxml.etree._ElementTree
+    and returns it as lxml.etree._ElementTree.
     """
-    return etree.parse(app.config['DATA_XML'])
+    if xml_data is None:
+        xml_data = app.config['DATA_XML']
+
+    return etree.parse(xml_data)

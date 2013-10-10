@@ -9,9 +9,18 @@ import unittest
 
 from presence_analyzer import main, views, utils
 
+from lxml import etree
 
 TEST_DATA_CSV = os.path.join(
     os.path.dirname(__file__), '..', '..', 'runtime', 'data', 'test_data.csv'
+)
+
+TEST_DATA_XML = os.path.join(
+    os.path.dirname(__file__), '..', '..', 'runtime', 'data', 'test_users.xml'
+)
+
+TEST_DATA_XSD = os.path.join(
+    os.path.dirname(__file__), '..', '..', 'runtime', 'data', 'xsd.xsd'
 )
 
 
@@ -26,6 +35,7 @@ class PresenceAnalyzerViewsTestCase(unittest.TestCase):
         Before each test, set up a environment.
         """
         main.app.config.update({'DATA_CSV': TEST_DATA_CSV})
+        main.app.config.update({'DATA_XML': TEST_DATA_XML})
         self.client = main.app.test_client()
 
     def tearDown(self):
@@ -114,6 +124,19 @@ class PresenceAnalyzerViewsTestCase(unittest.TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertIn('<li id="selected"><a href="mean_time_weekday.html">',
                       resp.data)
+
+    def test_view_users_data(self):
+        """
+        Test users data from xml data listing.
+        """
+        resp = self.client.get('/api/v1/users_data')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.content_type, 'application/json')
+        data = json.loads(resp.data)
+        self.assertEqual(len(data[0]), 3)
+        self.assertDictEqual(data[0], {u'user_id': u'141',
+                                       u'name': u'Adam Pie\u015bkiewicz',
+                                       u'avatar': u'/api/images/users/141'})
 
 
 class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
@@ -264,6 +287,19 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
 
         sample_data = [0, 30047, 24465, 23705, 0, 0, 0]
         self.assertEqual(utils.mean(sample_data), 11173.857142857143)
+
+    def test_read_user_data(self):
+        """
+        Test if xml data is read correctly
+        """
+        xml_data = utils.read_user_data(TEST_DATA_XML)
+
+        self.assertEqual(type(xml_data), etree._ElementTree)
+
+        schema_root = etree.parse(TEST_DATA_XSD)
+        schema = etree.XMLSchema(schema_root)
+        parser = etree.XMLParser(schema=schema)
+        etree.fromstring(etree.tostring(xml_data), parser)
 
 
 def suite():

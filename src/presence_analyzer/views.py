@@ -132,4 +132,3 @@ def mean_time_weekday():
     Renders template file for mean weekday time page
     """
     return render_template('mean_time_weekday.html')
-

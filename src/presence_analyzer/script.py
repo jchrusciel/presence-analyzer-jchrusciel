@@ -114,6 +114,7 @@ def run():
 
     werkzeug.script.run()
 
+
 def get_user_xml():
     """
     Gets xml file with user data.
@@ -126,7 +127,9 @@ def get_user_xml():
     remote_xml = etree.parse(url)
     local_xml = etree.parse(app.config['DATA_XML'])
 
-    if set(remote_xml.getroot().itertext()) != set(local_xml.getroot().itertext()):
+    if set(remote_xml.getroot().itertext()) \
+       != set(local_xml.getroot().itertext()):
+
         f = open('runtime/data/users.xml', 'w')
         f.write(etree.tostring(remote_xml))
         f.close()
