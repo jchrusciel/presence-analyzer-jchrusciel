@@ -12,8 +12,38 @@ from flask import Response
 
 from presence_analyzer.main import app
 
+from werkzeug.contrib.cache import SimpleCache
+
+import threading
+
 import logging
 log = logging.getLogger(__name__)  # pylint: disable-msg=C0103
+
+mycache = SimpleCache()  # pylint: disable-msg=C0103
+
+
+def cache(timeout=6):
+    """
+    Caches user data.
+    """
+    def wrap(wrapped_func):
+        """
+        Outer wrapper of cache.
+        """
+        lock = threading.Lock()
+
+        def wrapped(*args, **kwargs):
+            """
+            Inner wrapper of cache.
+            """
+            with lock:
+                response = mycache.get(1)
+                if response is None:
+                    response = wrapped_func()
+                    mycache.set(1, wrapped_func(), timeout)
+            return response
+        return wrapped
+    return wrap
 
 
 def jsonify(function):
@@ -30,6 +60,7 @@ def jsonify(function):
     return inner
 
 
+@cache(20)
 def get_data():
     """
     Extracts presence data from CSV file and groups it by user_id.
