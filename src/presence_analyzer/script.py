@@ -9,6 +9,8 @@ from functools import partial
 import paste.script.command
 import werkzeug.script
 
+from lxml import etree
+
 etc = partial(os.path.join, 'parts', 'etc')
 
 DEPLOY_INI = etc('deploy.ini')
@@ -111,3 +113,26 @@ def run():
         _serve('stop', dry_run=dry_run)
 
     werkzeug.script.run()
+
+
+def get_user_xml():
+    """
+    Gets xml file with user data.
+    """
+    from presence_analyzer import app
+    app.config.from_pyfile(abspath(DEPLOY_CFG))
+
+    url = "http://bolt/~sargo/users.xml"
+
+    remote_xml = etree.parse(url)
+    local_xml = etree.parse(app.config['DATA_XML'])
+
+    if set(remote_xml.getroot().itertext()) \
+       != set(local_xml.getroot().itertext()):
+
+        f = open('runtime/data/users.xml', 'w')
+        f.write(etree.tostring(remote_xml))
+        f.close()
+        log.debug('xml overwritten')
+    else:
+        log.debug('xml files do not differ. skipping.')
