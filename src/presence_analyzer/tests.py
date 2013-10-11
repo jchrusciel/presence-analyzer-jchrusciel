@@ -6,12 +6,22 @@ import os.path
 import json
 import datetime
 import unittest
+import time
 
-from presence_analyzer import main, views, utils
+from presence_analyzer import main, utils
 
+from lxml import etree
 
 TEST_DATA_CSV = os.path.join(
     os.path.dirname(__file__), '..', '..', 'runtime', 'data', 'test_data.csv'
+)
+
+TEST_DATA_XML = os.path.join(
+    os.path.dirname(__file__), '..', '..', 'runtime', 'data', 'test_users.xml'
+)
+
+TEST_DATA_XSD = os.path.join(
+    os.path.dirname(__file__), '..', '..', 'runtime', 'data', 'xsd.xsd'
 )
 
 
@@ -26,6 +36,7 @@ class PresenceAnalyzerViewsTestCase(unittest.TestCase):
         Before each test, set up a environment.
         """
         main.app.config.update({'DATA_CSV': TEST_DATA_CSV})
+        main.app.config.update({'DATA_XML': TEST_DATA_XML})
         self.client = main.app.test_client()
 
     def tearDown(self):
@@ -115,6 +126,20 @@ class PresenceAnalyzerViewsTestCase(unittest.TestCase):
         self.assertIn('<li id="selected"><a href="mean_time_weekday.html">',
                       resp.data)
 
+    def test_view_users_data(self):
+        """
+        Test users data from xml data listing.
+        """
+        resp = self.client.get('/api/v1/users_data')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.content_type, 'application/json')
+        data = json.loads(resp.data)
+        self.assertEqual(len(data[0]), 3)
+        self.assertDictEqual(data[0], {u'user_id': u'141',
+                                       u'name': u'Adam Pie\u015bkiewicz',
+                                       u'avatar': u'https://intranet.stxnext.\
+pl/api/images/users/141'})
+
 
 class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
     """
@@ -126,6 +151,7 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
         Before each test, set up a environment.
         """
         main.app.config.update({'DATA_CSV': TEST_DATA_CSV})
+        main.app.config.update({'DATA_XML': TEST_DATA_XML})
 
     def tearDown(self):
         """
@@ -264,6 +290,43 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
 
         sample_data = [0, 30047, 24465, 23705, 0, 0, 0]
         self.assertEqual(utils.mean(sample_data), 11173.857142857143)
+
+    def test_read_user_data(self):
+        """
+        Test if xml data is read correctly
+        """
+        xml_data = utils.read_user_data()
+
+        self.assertEqual(type(xml_data), etree._ElementTree)
+
+    def test_cache(self):
+        """
+        Test if cache works.
+        """
+        data_uncached = utils.get_data()
+        os.rename(main.app.config['DATA_CSV'],
+                  main.app.config['DATA_CSV']+"_bckp")
+
+        try:
+            data_cached = utils.get_data()
+        except:
+            data_cached.clear()
+
+        # check if cached data is retrieved corretly
+        self.assertEqual(data_uncached, data_cached)
+
+        time.sleep(20)
+
+        try:
+            data_cached = utils.get_data()
+        except:
+            data_cached.clear()
+
+        #check if unable to retrieve data after cache timeout
+        self.assertNotEqual(data_uncached, data_cached)
+
+        os.rename(main.app.config['DATA_CSV']+"_bckp",
+                  main.app.config['DATA_CSV'])
 
 
 def suite():

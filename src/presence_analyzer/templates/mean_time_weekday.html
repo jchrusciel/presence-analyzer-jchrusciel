@@ -16,20 +16,27 @@
         (function($) {
             $(document).ready(function(){
                 var loading = $('#loading');
-                $.getJSON("/api/v1/users", function(result) {
+                var avatar = []
+                $.getJSON("/api/v1/users_data", function(result) {
                     var dropdown = $("#user_id");
                     $.each(result, function(item) {
                         dropdown.append($("<option />").val(this.user_id).text(this.name));
+                        avatar[this.user_id] = this.avatar;
                     });
                     dropdown.show();
                     loading.hide();
                 });
+
                 $('#user_id').change(function(){
                     var selected_user = $("#user_id").val();
                     var chart_div = $('#chart_div');
+                    var avatar_div = $('#avatar_div');
+                    var avatar_img = $('#avatar_img');
                     if(selected_user) {
                         loading.show();
                         chart_div.hide();
+                        avatar_div.hide();
+
                         $.getJSON("/api/v1/mean_time_weekday/"+selected_user, function(result) {
                             $.each(result, function(index, value) {
                                 value[1] = parseInterval(value[1]);
@@ -46,8 +53,11 @@
                             formatter.format(data, 1);
 
 
+
+                        avatar_img.attr('src', avatar[selected_user]);
                             chart_div.show();
                             loading.hide();
+                            avatar_div.show();
                             var chart = new google.visualization.ColumnChart(chart_div[0]);
                             chart.draw(data, options);
                         });

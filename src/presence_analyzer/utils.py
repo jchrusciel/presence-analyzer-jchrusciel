@@ -17,6 +17,9 @@ from werkzeug.contrib.cache import SimpleCache
 import threading
 
 import logging
+
+from lxml import etree
+
 log = logging.getLogger(__name__)  # pylint: disable-msg=C0103
 
 mycache = SimpleCache()  # pylint: disable-msg=C0103
@@ -32,7 +35,7 @@ def cache(timeout=6):
         """
         lock = threading.Lock()
 
-        def wrapped(*args, **kwargs):
+        def wrapped():
             """
             Inner wrapper of cache.
             """
@@ -152,3 +155,11 @@ def group_by_weekday_presence(items):
         )
 
     return mean_start_end
+
+
+def read_user_data():
+    """
+    Read and parse user data from xml file
+    and returns it as lxml.etree._ElementTree.
+    """
+    return etree.parse(app.config['DATA_XML'])
