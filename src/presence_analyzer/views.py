@@ -105,8 +105,10 @@ def view_users_data():
     """
     data = read_user_data()
 
+    url = data.find('.//protocol').text + "://" + data.find('.//host').text
+
     return [{'user_id': i.get('id'), 'name': i.find('.//name').text,
-             'avatar': i.find('.//avatar').text}
+             'avatar': url + i.find('.//avatar').text}
             for i in data.findall('.//user')]
 
 

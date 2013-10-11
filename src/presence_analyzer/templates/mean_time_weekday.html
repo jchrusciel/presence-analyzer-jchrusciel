@@ -16,14 +16,17 @@
         (function($) {
             $(document).ready(function(){
                 var loading = $('#loading');
+                var avatar = []
                 $.getJSON("/api/v1/users_data", function(result) {
                     var dropdown = $("#user_id");
                     $.each(result, function(item) {
                         dropdown.append($("<option />").val(this.user_id).text(this.name));
+                        avatar[this.user_id] = this.avatar;
                     });
                     dropdown.show();
                     loading.hide();
                 });
+
                 $('#user_id').change(function(){
                     var selected_user = $("#user_id").val();
                     var chart_div = $('#chart_div');
@@ -33,6 +36,7 @@
                         loading.show();
                         chart_div.hide();
                         avatar_div.hide();
+
                         $.getJSON("/api/v1/mean_time_weekday/"+selected_user, function(result) {
                             $.each(result, function(index, value) {
                                 value[1] = parseInterval(value[1]);
@@ -48,7 +52,9 @@
                             var formatter = new google.visualization.DateFormat({pattern: 'HH:mm:ss'});
                             formatter.format(data, 1);
 
-                        avatar_img.attr('src', "https://intranet.stxnext.pl/api/images/users/"+selected_user);
+
+
+                        avatar_img.attr('src', avatar[selected_user]);
                             chart_div.show();
                             loading.hide();
                             avatar_div.show();

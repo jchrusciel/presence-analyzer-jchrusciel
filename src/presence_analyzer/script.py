@@ -133,6 +133,6 @@ def get_user_xml():
         f = open('runtime/data/users.xml', 'w')
         f.write(etree.tostring(remote_xml))
         f.close()
-        print "xml overwritten"
+        log.debug('xml overwritten')
     else:
-        print "xml files do not differ. skipping."
+        log.debug('xml files do not differ. skipping.')

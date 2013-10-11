@@ -136,7 +136,8 @@ class PresenceAnalyzerViewsTestCase(unittest.TestCase):
         self.assertEqual(len(data[0]), 3)
         self.assertDictEqual(data[0], {u'user_id': u'141',
                                        u'name': u'Adam Pie\u015bkiewicz',
-                                       u'avatar': u'/api/images/users/141'})
+                                       u'avatar': u'https://intranet.stxnext.\
+pl/api/images/users/141'})
 
 
 class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
@@ -149,6 +150,7 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
         Before each test, set up a environment.
         """
         main.app.config.update({'DATA_CSV': TEST_DATA_CSV})
+        main.app.config.update({'DATA_XML': TEST_DATA_XML})
 
     def tearDown(self):
         """
@@ -292,14 +294,9 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
         """
         Test if xml data is read correctly
         """
-        xml_data = utils.read_user_data(TEST_DATA_XML)
+        xml_data = utils.read_user_data()
 
         self.assertEqual(type(xml_data), etree._ElementTree)
-
-        schema_root = etree.parse(TEST_DATA_XSD)
-        schema = etree.XMLSchema(schema_root)
-        parser = etree.XMLParser(schema=schema)
-        etree.fromstring(etree.tostring(xml_data), parser)
 
 
 def suite():

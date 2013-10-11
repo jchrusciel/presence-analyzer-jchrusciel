@@ -59,3 +59,15 @@
             color: black;
             font-weight: bold;
         }
+
+        #avatar_div
+        {
+        width: 100px;
+        height: 100px;
+        display: none;
+        }
+
+        #avatar_img {
+        width: 100px;
+        height: 100px;
+        }
