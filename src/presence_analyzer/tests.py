@@ -6,8 +6,9 @@ import os.path
 import json
 import datetime
 import unittest
+import time
 
-from presence_analyzer import main, views, utils
+from presence_analyzer import main, utils
 
 from lxml import etree
 
@@ -297,6 +298,35 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
         xml_data = utils.read_user_data()
 
         self.assertEqual(type(xml_data), etree._ElementTree)
+
+    def test_cache(self):
+        """
+        Test if cache works.
+        """
+        data_uncached = utils.get_data()
+        os.rename(main.app.config['DATA_CSV'],
+                  main.app.config['DATA_CSV']+"_bckp")
+
+        try:
+            data_cached = utils.get_data()
+        except:
+            data_cached.clear()
+
+        # check if cached data is retrieved corretly
+        self.assertEqual(data_uncached, data_cached)
+
+        time.sleep(20)
+
+        try:
+            data_cached = utils.get_data()
+        except:
+            data_cached.clear()
+
+        #check if unable to retrieve data after cache timeout
+        self.assertNotEqual(data_uncached, data_cached)
+
+        os.rename(main.app.config['DATA_CSV']+"_bckp",
+                  main.app.config['DATA_CSV'])
 
 
 def suite():
