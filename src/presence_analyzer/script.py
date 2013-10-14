@@ -11,6 +11,9 @@ import werkzeug.script
 
 from lxml import etree
 
+import logging
+log = logging.getLogger(__name__)  # pylint: disable-msg=C0103
+
 etc = partial(os.path.join, 'parts', 'etc')
 
 DEPLOY_INI = etc('deploy.ini')
