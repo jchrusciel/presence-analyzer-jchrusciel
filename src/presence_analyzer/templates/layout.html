@@ -1,8 +1,11 @@
 <!doctype html>
 <html lang=en>
 <head>
+    {% if ie9compatibility -%}
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9">
+    {%- endif %}
     <title>{% block title %}The Page Title{% endblock %}</title>
-    {% block head %}
+    {%- block head -%}
     <link rel="stylesheet" type=text/css href="{{ url_for('static', filename='css/normalize.css') }}">
     <link rel="stylesheet" type=text/css href="{{ url_for('static', filename='css/style.css') }}">
     <meta name="keywords" content="" />
@@ -11,7 +14,7 @@
     <meta name="viewport" content="width=device-width; initial-scale=1.0">
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    {% endblock %}
+    {%- endblock %}
 </head>
 
 <body>
@@ -32,7 +35,7 @@
             </ul>
         </div>
         <div id="content">
-            {% block content %}{% endblock %}
+            {%- block content %}{% endblock %}
             <p>
                 <select id="user_id" style="display: none">
                     <option value="">--</option>
