@@ -13,9 +13,11 @@ from presence_analyzer.utils import (
 )
 from flask import render_template
 
-
 import logging
 log = logging.getLogger(__name__)  # pylint: disable-msg=C0103
+
+import locale
+locale.setlocale(locale.LC_COLLATE, 'pl_PL.UTF-8')
 
 
 @app.route('/')
@@ -117,9 +119,11 @@ def view_users_data():
 
     url = data.find('.//protocol').text + "://" + data.find('.//host').text
 
-    return [{'user_id': i.get('id'), 'name': i.find('.//name').text,
-             'avatar': url + i.find('.//avatar').text}
-            for i in data.findall('.//user')]
+    user_data = [{'user_id': i.get('id'), 'name': i.find('.//name').text,
+                  'avatar': url + i.find('.//avatar').text}
+                 for i in data.findall('.//user')]
+
+    return sorted(user_data, key=lambda k: k['name'], cmp=locale.strcoll)
 
 
 @app.route("/presence_start_end.html")
