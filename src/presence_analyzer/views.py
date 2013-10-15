@@ -121,7 +121,7 @@ def view_users_data():
 
     user_data = [{'user_id': i.get('id'), 'name': i.find('.//name').text,
                   'avatar': url + i.find('.//avatar').text}
-                 for i in sorted(data.findall('.//user'))]
+                 for i in data.findall('.//user')]
 
     return sorted(user_data, key=lambda k: k['name'], cmp=locale.strcoll)
 
